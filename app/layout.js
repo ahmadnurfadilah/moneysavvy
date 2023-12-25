@@ -1,4 +1,6 @@
+import { Toaster } from 'react-hot-toast'
 import './globals.css'
+import Loading from '@/components/ui/loading'
 
 export const metadata = {
   title: 'MoneySavvy',
@@ -8,7 +10,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Loading />
+        {children}
+        <Toaster />
+      </body>
     </html>
   )
 }
