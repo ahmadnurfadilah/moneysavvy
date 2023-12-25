@@ -20,7 +20,7 @@ export default function Layout({ children }) {
           </div>
         </div>
       </nav>
-      <main>{children}</main>
+      <main className="bg-gray-100 min-h-[calc(100vh_-_5rem)]">{children}</main>
     </>
   );
 }
