@@ -1,0 +1,68 @@
+{
+    "protocol": "https://moneysavvy.xyz",
+    "published": true,
+    "types": {
+        "account": {
+            "schema": "https://moneysavvy.xyz/schemas/account.json",
+            "dataFormats": [
+                "application/json"
+            ]
+        },
+        "category": {
+            "schema": "https://moneysavvy.xyz/schemas/category.json",
+            "dataFormats": [
+                "application/json"
+            ]
+        },
+        "record": {
+            "schema": "https://moneysavvy.xyz/schemas/record.json",
+            "dataFormats": [
+                "application/json"
+            ]
+        }
+    },
+    "structure": {
+        "account": {
+            "$actions": [
+                {
+                    "who": "author",
+                    "of": "account",
+                    "can": "read"
+                },
+                {
+                    "who": "author",
+                    "of": "account",
+                    "can": "write"
+                }
+            ]
+        },
+        "category": {
+            "$actions": [
+                {
+                    "who": "author",
+                    "of": "category",
+                    "can": "read"
+                },
+                {
+                    "who": "author",
+                    "of": "category",
+                    "can": "write"
+                }
+            ]
+        },
+        "record": {
+            "$actions": [
+                {
+                    "who": "author",
+                    "of": "record",
+                    "can": "read"
+                },
+                {
+                    "who": "author",
+                    "of": "record",
+                    "can": "write"
+                }
+            ]
+        }
+    }
+}
