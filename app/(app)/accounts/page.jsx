@@ -10,14 +10,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuthWeb5 } from "@/lib/auth";
 import { useLoading } from "@/lib/store";
-import protocolDefinition from "../../../public/protocol.json";
+import protocolDefinition from "../../../public/assets/data/protocol.json";
 import toast from "react-hot-toast";
-
-const dummy = [
-  { id: 1, name: "Cash", amount: 120, category: "Cash" },
-  { id: 2, name: "BCA", amount: 100, category: "Debit" },
-  { id: 3, name: "Mandiri", amount: 220, category: "Debit" },
-];
 
 export default function Page() {
   const { did, web5 } = useAuthWeb5();

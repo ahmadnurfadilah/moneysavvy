@@ -5,8 +5,10 @@ import { Button } from "./button";
 import { useLoading, useUserStore } from "@/lib/store";
 import { Web5 } from "@web5/api";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Auth() {
+  const router = useRouter();
   const setLoading = useLoading((state) => state.setMsg);
   const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
@@ -18,6 +20,10 @@ export default function Auth() {
       did: did,
       loggedIn: true,
     });
+    setTimeout(() => {
+      router.push("/dashboard");
+      setLoading(false);
+    }, 500);
   };
 
   return user ? (

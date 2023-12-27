@@ -12,10 +12,12 @@ export function DrawerDialog({ children, open, setOpen, title, desc }) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{desc}</DialogDescription>
-          </DialogHeader>
+          {(title || desc) && (
+            <DialogHeader>
+              <DialogTitle>{title}</DialogTitle>
+              <DialogDescription>{desc}</DialogDescription>
+            </DialogHeader>
+          )}
           <div>{children}</div>
         </DialogContent>
       </Dialog>
@@ -25,10 +27,12 @@ export function DrawerDialog({ children, open, setOpen, title, desc }) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>{title}</DrawerTitle>
-          <DrawerDescription>{desc}</DrawerDescription>
-        </DrawerHeader>
+        {(title || desc) && (
+          <DrawerHeader className="text-left">
+            <DrawerTitle>{title}</DrawerTitle>
+            <DrawerDescription>{desc}</DrawerDescription>
+          </DrawerHeader>
+        )}
         <div className="p-4">{children}</div>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>

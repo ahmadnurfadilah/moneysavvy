@@ -1,0 +1,62 @@
+[
+    {
+        "name": "Allowance",
+        "type": "income"
+    },
+    {
+        "name": "Bonus",
+        "type": "income"
+    },
+    {
+        "name": "Salary",
+        "type": "income"
+    },
+    {
+        "name": "Others",
+        "type": "income"
+    },
+    {
+        "name": "Bills",
+        "type": "expense"
+    },
+    {
+        "name": "Debt",
+        "type": "expense"
+    },
+    {
+        "name": "Education",
+        "type": "expense"
+    },
+    {
+        "name": "Entertainment",
+        "type": "expense"
+    },
+    {
+        "name": "Family",
+        "type": "expense"
+    },
+    {
+        "name": "Food & Drinks",
+        "type": "expense"
+    },
+    {
+        "name": "Healthcare",
+        "type": "expense"
+    },
+    {
+        "name": "Shopping",
+        "type": "expense"
+    },
+    {
+        "name": "Social",
+        "type": "expense"
+    },
+    {
+        "name": "Transportation",
+        "type": "expense"
+    },
+    {
+        "name": "Others",
+        "type": "expense"
+    }
+]
