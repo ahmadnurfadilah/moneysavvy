@@ -9,7 +9,7 @@ import { ArrowRightCircle, Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuthWeb5 } from "@/lib/auth";
-import { useLoading } from "@/lib/store";
+import { useAccountsStore, useLoading } from "@/lib/store";
 import protocolDefinition from "../../../public/assets/data/protocol.json";
 import toast from "react-hot-toast";
 
@@ -18,6 +18,7 @@ export default function Page() {
   const [accounts, setAccounts] = useState([]);
   const [open, setOpen] = useState(false);
   const setLoading = useLoading((state) => state.setMsg);
+  const setAccountsStore = useAccountsStore((state) => state.setAccounts);
 
   useEffect(() => {
     if (!did || !web5) return;
@@ -40,6 +41,7 @@ export default function Page() {
       newAccounts.push({ id: record.id, ...data });
     }
     setAccounts(newAccounts);
+    setAccountsStore(newAccounts);
   };
 
   const handleSubmit = async (values) => {
@@ -128,7 +130,7 @@ export default function Page() {
                 <Field type="text" name="balance" className="w-full rounded-md border-gray-300" placeholder="...." />
                 <ErrorMessage name="balance" component="div" className="text-xs text-red-500 font-bold" />
               </div>
-              <Button type="submit" variant="dark" className="w-full" disabled={isSubmitting}>
+              <Button type="submit" variant="dark" className="w-full" size="lg" disabled={isSubmitting}>
                 Submit
               </Button>
             </Form>

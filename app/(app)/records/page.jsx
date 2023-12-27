@@ -13,6 +13,8 @@ import protocolDefinition from "../../../public/assets/data/protocol.json";
 import toast from "react-hot-toast";
 import moment from "moment";
 import { first } from "lodash";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
 
 export default function Page() {
   const { did, web5 } = useAuthWeb5();
@@ -39,7 +41,6 @@ export default function Page() {
         dateSort: "createdAscending",
       },
     });
-    console.log("records", records);
 
     const rcrds = [];
     for (let record of records) {
@@ -88,19 +89,38 @@ export default function Page() {
   const handleSubmit = async (values) => {
     setLoading("Loading...");
 
-    const newRecord = {
-      "@type": "record",
-      author: did,
-      account_id: values.account,
-      category_id: values.category,
-      date: values.date,
-      amount: values.amount,
-      note: values.note,
-    };
-
     try {
+      // Update account balance
+      const { record: account } = await web5.dwn.records.read({
+        message: {
+          filter: {
+            recordId: values.account,
+          },
+        },
+      });
+  
+      const accountJson = await account.data.json();
+      await account.update({
+        data: {
+          "@type": "account",
+          name: accountJson.name,
+          balance: type === "income" ? parseInt(accountJson.balance) + parseInt(values.amount) : parseInt(accountJson.balance) - parseInt(values.amount),
+          author: did,
+        },
+      });
+
+      // Add record transaction
       const { record } = await web5.dwn.records.create({
-        data: newRecord,
+        data: {
+          "@type": "record",
+          author: did,
+          account_id: values.account,
+          category_id: values.category,
+          date: values.date,
+          amount: type === "income" ? values.amount : 0 - values.amount,
+          note: type === "transfer" ? "Transfer" : values.note,
+          type: type,
+        },
         message: {
           protocol: protocolDefinition.protocol,
           protocolPath: "record",
@@ -134,10 +154,8 @@ export default function Page() {
       </div>
 
       <div className="container px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {trxRecords.map((i) => (
-            <div key={i.id}></div>
-          ))}
+        <div className="w-full bg-white">
+          <DataTable columns={columns} data={trxRecords} />
         </div>
       </div>
 
@@ -171,7 +189,7 @@ export default function Page() {
                 <div className="grid grid-cols-4 items-center">
                   <Label htmlFor="date">Date</Label>
                   <div className="col-span-3">
-                    <Field type="date" name="date" className="w-full rounded-md border-gray-400" placeholder="...." />
+                    <Field type="date" name="date" className="w-full rounded-md border-gray-300" placeholder="...." />
                     <ErrorMessage name="date" component="div" className="text-xs text-red-500 font-bold" />
                   </div>
                 </div>
@@ -179,7 +197,7 @@ export default function Page() {
                 <div className="grid grid-cols-4 items-center">
                   <Label htmlFor="account">Account</Label>
                   <div className="col-span-3">
-                    <Field as="select" name="account" className="w-full rounded-md border-gray-400">
+                    <Field as="select" name="account" className="w-full rounded-md border-gray-300">
                       {accounts.map((i) => (
                         <option key={i.id} value={i.id}>
                           {i.name}
@@ -193,12 +211,14 @@ export default function Page() {
                 <div className="grid grid-cols-4 items-center">
                   <Label htmlFor="category">Category</Label>
                   <div className="col-span-3">
-                    <Field as="select" name="category" className="w-full rounded-md border-gray-400">
-                      {categories?.filter((o) => o.type === type).map((i) => (
-                        <option key={i.id} value={i.id}>
-                          {i.name}
-                        </option>
-                      ))}
+                    <Field as="select" name="category" className="w-full rounded-md border-gray-300">
+                      {categories
+                        ?.filter((o) => o.type === type)
+                        .map((i) => (
+                          <option key={i.id} value={i.id}>
+                            {i.name}
+                          </option>
+                        ))}
                     </Field>
                     <ErrorMessage name="category" component="div" className="text-xs text-red-500 font-bold" />
                   </div>
@@ -207,7 +227,7 @@ export default function Page() {
                 <div className="grid grid-cols-4 items-center">
                   <Label htmlFor="amount">Amount</Label>
                   <div className="col-span-3">
-                    <Field type="text" name="amount" className="w-full rounded-md border-gray-400" placeholder="...." />
+                    <Field type="text" name="amount" className="w-full rounded-md border-gray-300" placeholder="...." />
                     <ErrorMessage name="amount" component="div" className="text-xs text-red-500 font-bold" />
                   </div>
                 </div>
@@ -215,7 +235,7 @@ export default function Page() {
                 <div className="grid grid-cols-4 items-center">
                   <Label htmlFor="note">Note</Label>
                   <div className="col-span-3">
-                    <Field type="text" name="note" className="w-full rounded-md border-gray-400" placeholder="...." />
+                    <Field type="text" name="note" className="w-full rounded-md border-gray-300" placeholder="...." />
                     <ErrorMessage name="note" component="div" className="text-xs text-red-500 font-bold" />
                   </div>
                 </div>
