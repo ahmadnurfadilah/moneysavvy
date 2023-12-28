@@ -38,7 +38,7 @@ export default function Page() {
         filter: {
           schema: protocolDefinition.types.record.schema,
         },
-        dateSort: "createdAscending",
+        dateSort: "createdDescending",
       },
     });
 
@@ -98,7 +98,7 @@ export default function Page() {
           },
         },
       });
-  
+
       const accountJson = await account.data.json();
       await account.update({
         data: {
@@ -109,25 +109,76 @@ export default function Page() {
         },
       });
 
+      if (type === "transfer") {
+        // Update recipient account balance if type is transfer
+        const { record: toAccount } = await web5.dwn.records.read({
+          message: {
+            filter: {
+              recordId: values.to_account,
+            },
+          },
+        });
+
+        const toAccountJson = await toAccount.data.json();
+        await toAccount.update({
+          data: {
+            "@type": "account",
+            name: toAccountJson.name,
+            balance: parseInt(toAccountJson.balance) + parseInt(values.amount),
+            author: did,
+          },
+        });
+      }
+
+      const recordMessage = {
+        protocol: protocolDefinition.protocol,
+        protocolPath: "record",
+        schema: protocolDefinition.types.record.schema,
+        dataFormat: protocolDefinition.types.record.dataFormats[0],
+      };
+
+      const recordData = {
+        "@type": "record",
+        author: did,
+        date: values.date,
+        type: type,
+      };
+
       // Add record transaction
-      const { record } = await web5.dwn.records.create({
-        data: {
-          "@type": "record",
-          author: did,
-          account_id: values.account,
-          category_id: values.category,
-          date: values.date,
-          amount: type === "income" ? values.amount : 0 - values.amount,
-          note: type === "transfer" ? "Transfer" : values.note,
-          type: type,
-        },
-        message: {
-          protocol: protocolDefinition.protocol,
-          protocolPath: "record",
-          schema: protocolDefinition.types.record.schema,
-          dataFormat: protocolDefinition.types.record.dataFormats[0],
-        },
-      });
+      if (type === "transfer") {
+        await web5.dwn.records.create({
+          data: {
+            ...recordData,
+            note: "Transfer Out",
+            account_id: values.account,
+            to_account_id: values.to_account,
+            amount: 0 - values.amount,
+          },
+          message: recordMessage,
+        });
+        await web5.dwn.records.create({
+          data: {
+            ...recordData,
+            note: "Transfer In",
+            account_id: values.to_account,
+            from_account_id: values.account,
+            amount: values.amount,
+          },
+          message: recordMessage,
+        });
+      } else {
+        await web5.dwn.records.create({
+          data: {
+            ...recordData,
+            account_id: values.account,
+            category_id: values.category,
+            note: type === "transfer" ? "Transfer" : values.note,
+            amount: type === "income" ? values.amount : 0 - values.amount,
+          },
+          message: recordMessage,
+        });
+      }
+
       getRecords();
       toast.success("Success!");
       setOpen(false);
@@ -162,11 +213,12 @@ export default function Page() {
       <DrawerDialog open={open} setOpen={setOpen}>
         <Formik
           enableReinitialize
-          initialValues={{ account: first(accounts)?.id, amount: "", category: "", note: "", date: moment().format("yyyy-MM-DD") }}
+          initialValues={{ account: first(accounts)?.id, to_account: "", amount: "", category: "", note: "", date: moment().format("yyyy-MM-DD") }}
           validationSchema={Yup.object({
             account: Yup.string().required("Required"),
+            to_account: Yup.string().required("Required"),
             amount: Yup.number().required("Required"),
-            category: Yup.string().required("Required"),
+            category: type !== "transfer" ? Yup.string().required("Required") : "",
             date: Yup.string().required("Required"),
           })}
           onSubmit={(values) => handleSubmit(values)}
@@ -194,24 +246,43 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 items-center">
-                  <Label htmlFor="account">Account</Label>
-                  <div className="col-span-3">
-                    <Field as="select" name="account" className="w-full rounded-md border-gray-300">
-                      {accounts.map((i) => (
-                        <option key={i.id} value={i.id}>
-                          {i.name}
-                        </option>
-                      ))}
-                    </Field>
-                    <ErrorMessage name="account" component="div" className="text-xs text-red-500 font-bold" />
+                <div className={`space-y-3 ${type === "transfer" && "border-2 border-gray-300 border-dashed p-3 rounded-lg"}`}>
+                  <div className="grid grid-cols-4 items-center">
+                    <Label htmlFor="account">{type === "transfer" ? "From" : "Account"}</Label>
+                    <div className="col-span-3">
+                      <Field as="select" name="account" className="w-full rounded-md border-gray-300">
+                        <option value="">-- Select --</option>
+                        {accounts.map((i) => (
+                          <option key={i.id} value={i.id}>
+                            {i.name}
+                          </option>
+                        ))}
+                      </Field>
+                      <ErrorMessage name="account" component="div" className="text-xs text-red-500 font-bold" />
+                    </div>
+                  </div>
+
+                  <div className={`grid grid-cols-4 items-center ${type !== "transfer" && "hidden"}`}>
+                    <Label htmlFor="to_account">To Account</Label>
+                    <div className="col-span-3">
+                      <Field as="select" name="to_account" className="w-full rounded-md border-gray-300">
+                        <option value="">-- Select --</option>
+                        {accounts.map((i) => (
+                          <option key={i.id} value={i.id}>
+                            {i.name}
+                          </option>
+                        ))}
+                      </Field>
+                      <ErrorMessage name="to_account" component="div" className="text-xs text-red-500 font-bold" />
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 items-center">
+                <div className={`grid grid-cols-4 items-center ${type === "transfer" && "hidden"}`}>
                   <Label htmlFor="category">Category</Label>
                   <div className="col-span-3">
                     <Field as="select" name="category" className="w-full rounded-md border-gray-300">
+                      <option value="">-- Select --</option>
                       {categories
                         ?.filter((o) => o.type === type)
                         .map((i) => (
@@ -232,7 +303,7 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 items-center">
+                <div className={`grid grid-cols-4 items-center ${type === "transfer" && "hidden"}`}>
                   <Label htmlFor="note">Note</Label>
                   <div className="col-span-3">
                     <Field type="text" name="note" className="w-full rounded-md border-gray-300" placeholder="...." />

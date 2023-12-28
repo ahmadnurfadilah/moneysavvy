@@ -38,7 +38,7 @@ export const columns = [
       }).format(amount);
 
       return (
-        <div className={`text-right font-medium ${row.original.type === "income" ? "text-green-600" : "text-red-600"}`}>
+        <div className={`text-right font-medium ${row.original.type === "income" || row.original.note === "Transfer In" ? "text-green-600" : "text-red-600"}`}>
           {row.original.type === "income" && "+"}
           {formatted}
         </div>
