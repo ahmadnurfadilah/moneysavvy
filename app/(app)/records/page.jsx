@@ -89,6 +89,11 @@ export default function Page() {
   const handleSubmit = async (values) => {
     setLoading("Loading...");
 
+    if (type === "transfer" && (values.account === values.to_account)) {
+      setLoading(false);
+      return toast.error("From & to account must be different");
+    }
+
     try {
       // Update account balance
       const { record: account } = await web5.dwn.records.read({
@@ -152,7 +157,7 @@ export default function Page() {
             note: "Transfer Out",
             account_id: values.account,
             to_account_id: values.to_account,
-            amount: 0 - values.amount,
+            amount: 0 - parseInt(values.amount),
           },
           message: recordMessage,
         });
@@ -162,7 +167,7 @@ export default function Page() {
             note: "Transfer In",
             account_id: values.to_account,
             from_account_id: values.account,
-            amount: values.amount,
+            amount: parseInt(values.amount),
           },
           message: recordMessage,
         });
@@ -173,7 +178,7 @@ export default function Page() {
             account_id: values.account,
             category_id: values.category,
             note: type === "transfer" ? "Transfer" : values.note,
-            amount: type === "income" ? values.amount : 0 - values.amount,
+            amount: type === "income" ? parseInt(values.amount) : 0 - parseInt(values.amount),
           },
           message: recordMessage,
         });
@@ -216,7 +221,7 @@ export default function Page() {
           initialValues={{ account: first(accounts)?.id, to_account: "", amount: "", category: "", note: "", date: moment().format("yyyy-MM-DD") }}
           validationSchema={Yup.object({
             account: Yup.string().required("Required"),
-            to_account: Yup.string().required("Required"),
+            to_account: type === "transfer" ? Yup.string().required("Required") : "",
             amount: Yup.number().required("Required"),
             category: type !== "transfer" ? Yup.string().required("Required") : "",
             date: Yup.string().required("Required"),
