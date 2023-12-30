@@ -218,7 +218,7 @@ export default function Page() {
       <DrawerDialog open={open} setOpen={setOpen}>
         <Formik
           enableReinitialize
-          initialValues={{ account: first(accounts)?.id, to_account: "", amount: "", category: "", note: "", date: moment().format("yyyy-MM-DD") }}
+          initialValues={{ account: first(accounts)?.id, to_account: "", amount: "", category: "", note: "", date: moment().format("YYYY-MM-DD") }}
           validationSchema={Yup.object({
             account: Yup.string().required("Required"),
             to_account: type === "transfer" ? Yup.string().required("Required") : "",
