@@ -3,7 +3,6 @@
 import { LayoutDashboard, LogIn } from "lucide-react";
 import { Button } from "./button";
 import { useLoading, useUserStore } from "@/lib/store";
-import { Web5 } from "@web5/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -14,6 +13,8 @@ export default function Auth() {
   const setUser = useUserStore((state) => state.setUser);
 
   const handleConnect = async () => {
+    const { Web5 } = await import('@web5/api');
+    
     setLoading("Connecting your DID...");
     const { did } = await Web5.connect();
     setUser({

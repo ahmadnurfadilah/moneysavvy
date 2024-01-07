@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Web5 } from "@web5/api";
 import { find } from "lodash";
 import { MoreHorizontal, Trash } from "lucide-react";
 import moment from "moment";
@@ -64,6 +63,8 @@ export const columns = [
       const record = row.original;
 
       const handleDelete = async () => {
+        const { Web5 } = await import('@web5/api');
+        
         const { web5, did } = await Web5.connect();
 
         // Get related record
