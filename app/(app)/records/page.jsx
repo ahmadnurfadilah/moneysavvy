@@ -200,7 +200,7 @@ export default function Page() {
       <div className="w-full bg-dark h-16 flex items-start mb-5">
         <div className="container px-4">
           <div className="flex items-center gap-4">
-            <Button size="sm" variant="primary" onClick={() => setOpen(true)}>
+            <Button size="sm" variant="primary" className="gap-2" onClick={() => setOpen(true)}>
               <Plus className="w-4 h-4" />
               New
             </Button>

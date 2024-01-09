@@ -13,6 +13,7 @@ import { useAccountsStore, useLoading } from "@/lib/store";
 import protocolDefinition from "../../../public/assets/data/protocol.json";
 import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import numeral from "numeral";
 
 export default function Page() {
   const { did, web5 } = useAuthWeb5();
@@ -81,7 +82,7 @@ export default function Page() {
       <div className="w-full bg-dark h-16 flex items-start mb-5">
         <div className="container px-4">
           <div className="flex items-center gap-4">
-            <Button size="sm" variant="primary" onClick={() => setOpen(true)}>
+            <Button size="sm" variant="primary" className="gap-2" onClick={() => setOpen(true)}>
               <Plus className="w-4 h-4" />
               New
             </Button>
@@ -103,12 +104,12 @@ export default function Page() {
             {accounts.map((i) => (
               <Link
                 key={i.id}
-                href="/"
+                href={`/accounts/${i.id}`}
                 className="w-full bg-white rounded-2xl border shadow-sm flex items-center group hover:shadow-md transition-all hover:border-dark"
               >
                 <div className="flex-1 p-4">
                   <h2 className="mb-1 text-gray-500">{i.name}</h2>
-                  <p className="font-mono font-bold text-xl">${i.balance}</p>
+                  <p className="font-mono font-bold text-xl">{numeral(i.balance).format("$0,")}</p>
                 </div>
                 <div className="shrink-0 bg-primary h-full rounded-r-2xl w-1/5 p-2 flex justify-center items-center text-dark/50 group-hover:w-1/4 transition-all group-hover:text-dark duration-500">
                   <ArrowRightCircle className="w-6 h-6" />
