@@ -7,7 +7,6 @@ import useMediaQuery from "../../lib/useMediaQuery";
 
 export function DrawerDialog({ children, open, setOpen, title, desc }) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  console.log(isDesktop);
 
   if (isDesktop) {
     return (

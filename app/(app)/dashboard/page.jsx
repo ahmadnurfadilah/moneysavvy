@@ -65,20 +65,19 @@ export default function Page() {
   }, [did, web5]);
 
   useEffect(() => {
-    if (records.length > 0) {
-      const gwExpense = [];
-      for (let i = 6; i >= 0; i--) {
-        const date = moment().subtract(i, "days").format("YYYY-MM-DD");
-        gwExpense.push({
-          name: moment(date).format("ddd"),
-          total: sumBy(
-            records.filter((o) => o.type === "expense" && o.date === date),
-            (o) => Math.abs(o.amount)
-          ),
-        });
-      }
-      setGraphWeekExpense(gwExpense);
+    const gwExpense = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = moment().subtract(i, "days").format("YYYY-MM-DD");
+      gwExpense.push({
+        name: moment(date).format("ddd"),
+        total: sumBy(
+          records.filter((o) => o.type === "expense" && o.date === date),
+          (o) => Math.abs(o.amount)
+        ),
+      });
     }
+
+    setGraphWeekExpense(gwExpense);
   }, [records]);
 
   const getRecords = async () => {

@@ -12,10 +12,11 @@ import { useAuthWeb5 } from "@/lib/auth";
 import { useAccountsStore, useLoading } from "@/lib/store";
 import protocolDefinition from "../../../public/assets/data/protocol.json";
 import toast from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Page() {
   const { did, web5 } = useAuthWeb5();
-  const [accounts, setAccounts] = useState([]);
+  const [accounts, setAccounts] = useState(null);
   const [open, setOpen] = useState(false);
   const setLoading = useLoading((state) => state.setMsg);
   const setAccountsStore = useAccountsStore((state) => state.setAccounts);
@@ -90,23 +91,32 @@ export default function Page() {
       </div>
 
       <div className="container px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {accounts.map((i) => (
-            <Link
-              key={i.id}
-              href="/"
-              className="w-full bg-white rounded-2xl border shadow-sm flex items-center group hover:shadow-md transition-all hover:border-dark"
-            >
-              <div className="flex-1 p-4">
-                <h2 className="mb-1 text-gray-500">{i.name}</h2>
-                <p className="font-mono font-bold text-xl">${i.balance}</p>
-              </div>
-              <div className="shrink-0 bg-primary h-full rounded-r-2xl w-1/5 p-2 flex justify-center items-center text-dark/50 group-hover:w-1/4 transition-all group-hover:text-dark duration-500">
-                <ArrowRightCircle className="w-6 h-6" />
-              </div>
-            </Link>
-          ))}
-        </div>
+        {accounts === null ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <Skeleton className="w-full h-24 rounded-2xl bg-gray-300" />
+            <Skeleton className="w-full h-24 rounded-2xl bg-gray-300" />
+            <Skeleton className="w-full h-24 rounded-2xl bg-gray-300" />
+            <Skeleton className="w-full h-24 rounded-2xl bg-gray-300" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {accounts.map((i) => (
+              <Link
+                key={i.id}
+                href="/"
+                className="w-full bg-white rounded-2xl border shadow-sm flex items-center group hover:shadow-md transition-all hover:border-dark"
+              >
+                <div className="flex-1 p-4">
+                  <h2 className="mb-1 text-gray-500">{i.name}</h2>
+                  <p className="font-mono font-bold text-xl">${i.balance}</p>
+                </div>
+                <div className="shrink-0 bg-primary h-full rounded-r-2xl w-1/5 p-2 flex justify-center items-center text-dark/50 group-hover:w-1/4 transition-all group-hover:text-dark duration-500">
+                  <ArrowRightCircle className="w-6 h-6" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <DrawerDialog open={open} setOpen={setOpen} title="New" desc="Create a new account">
