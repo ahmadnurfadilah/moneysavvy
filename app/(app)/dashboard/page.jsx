@@ -9,6 +9,8 @@ import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, X
 import { sumBy } from "lodash";
 import numeral from "numeral";
 import moment from "moment";
+import Link from "next/link";
+import ExpenseCategory from "@/components/chart/expense-category";
 
 export default function Page() {
   const { did, web5 } = useAuthWeb5();
@@ -105,7 +107,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="container px-4">
+      <div className="container px-4 pb-8">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12 md:col-span-4 bg-white rounded-md border shadow p-4">
             <h2 className="font-bold flex items-center gap-2 mb-4">
@@ -188,6 +190,46 @@ export default function Page() {
                   <Area type="monotone" dataKey="total" stroke="#f43f5e" fillOpacity={1} fill="url(#colorUv)" />
                 </AreaChart>
               </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="col-span-12 md:col-span-4 bg-white rounded-md border shadow p-4 flex flex-col">
+            <h2 className="shrink-0 font-bold flex items-center gap-2 mb-4">
+              <Gauge className="w-5 h-5 text-gray-500" />
+              Expenses by Category
+            </h2>
+            <div className="flex-1 w-full aspect-square overflow-y-auto">
+              <ExpenseCategory records={records.filter((o) => o.type === "expense")} />
+            </div>
+          </div>
+
+          <div className="col-span-12 md:col-span-4 bg-white rounded-md border shadow p-4 flex flex-col">
+            <h2 className="shrink-0 font-bold flex items-center gap-2 mb-4">
+              <Gauge className="w-5 h-5 text-gray-500" />
+              Account Balance
+            </h2>
+            <div className="flex-1 w-full aspect-square overflow-y-auto space-y-2">
+              {accounts.map((i) => (
+                <Link href={`/accounts/${i.id}`} key={i.id} className="flex items-center justify-between border rounded-lg p-2 bg-gray-50 hover:bg-primary-50">
+                  <h6 className="font-bold">{i.name}</h6>
+                  <p className="font-mono">{numeral(i.balance).format("$0")}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="col-span-12 md:col-span-4 bg-white rounded-md border shadow p-4 flex flex-col">
+            <h2 className="shrink-0 font-bold flex items-center gap-2 mb-4">
+              <Gauge className="w-5 h-5 text-gray-500" />
+              Last Records
+            </h2>
+            <div className="flex-1 w-full aspect-square overflow-y-auto divide-y">
+              {records.map((i) => (
+                <Link href={`/accounts/${i.id}`} key={i.id} className="flex items-center justify-between mb-2 pt-2">
+                  <h6 className="font-bold">{accounts.find((o) => o.id === i.account_id).name}</h6>
+                  <p className={`font-mono ${i.type === "expense" ? "text-red-600" : "text-green-600"}`}>{numeral(i.amount).format("$0")}</p>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
