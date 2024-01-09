@@ -7,22 +7,22 @@ export default function ExpenseCategory({ records }) {
   const categories = useCategoriesStore((state) => state.categories);
 
   useEffect(() => {
-    let amountCategories = categories.map((i) => {
-      return { name: i.name, value: 0, id: i.id };
-    });
+    if (categories) {
+      let amountCategories = categories.map((i) => {
+        return { name: i.name, value: 0, id: i.id };
+      });
 
-    if (records.length > 0) {
-      for (const r of records) {
-        const findCat = amountCategories.find((o) => o.id === r.category_id);
-        const withOutCat = amountCategories.filter((o) => o.id !== r.category_id);
-        amountCategories = [...withOutCat, { name: findCat.name, value: findCat.value + Math.abs(r.amount), id: findCat.id }];
+      if (records.length > 0) {
+        for (const r of records) {
+          const findCat = amountCategories.find((o) => o.id === r.category_id);
+          const withOutCat = amountCategories.filter((o) => o.id !== r.category_id);
+          amountCategories = [...withOutCat, { name: findCat.name, value: findCat.value + Math.abs(r.amount), id: findCat.id }];
+        }
       }
+
+      setData(amountCategories.filter((o) => o.value > 0));
     }
-
-    setData(amountCategories.filter((o) => o.value > 0));
   }, [records]);
-
-  console.log(data);
 
   return (
     <ResponsiveContainer width="100%" height="100%" className="font-mono">
