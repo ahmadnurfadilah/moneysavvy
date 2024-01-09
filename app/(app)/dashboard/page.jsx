@@ -209,7 +209,7 @@ export default function Page() {
               Account Balance
             </h2>
             <div className="flex-1 w-full aspect-square overflow-y-auto space-y-2">
-              {accounts.map((i) => (
+              {accounts?.map((i) => (
                 <Link href={`/accounts/${i.id}`} key={i.id} className="flex items-center justify-between border rounded-lg p-2 bg-gray-50 hover:bg-primary-50">
                   <h6 className="font-bold">{i.name}</h6>
                   <p className="font-mono">{numeral(i.balance).format("$0")}</p>
@@ -224,7 +224,7 @@ export default function Page() {
               Last Records
             </h2>
             <div className="flex-1 w-full aspect-square overflow-y-auto divide-y">
-              {records.map((i) => (
+              {records?.map((i) => (
                 <Link href={`/accounts/${i.id}`} key={i.id} className="flex items-center justify-between mb-2 pt-2">
                   <h6 className="font-bold">{accounts.find((o) => o.id === i.account_id).name}</h6>
                   <p className={`font-mono ${i.type === "expense" ? "text-red-600" : "text-green-600"}`}>{numeral(i.amount).format("$0")}</p>
